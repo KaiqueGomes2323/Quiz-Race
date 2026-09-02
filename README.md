@@ -1,3 +1,5 @@
+## Recomendo que abra esse arquivo no Visual Studio Code (VS Code)!!
+
 ## Estrutura
 
 ```
