@@ -40,7 +40,7 @@ const firebaseConfig = {
   appId: "1:118361424687:web:0c463e2154539a552757da"
 };
 
-5. Cole em `js/firebase-config.js`, no lugar dos placeholders (`SUA_API_KEY_AQUI`, etc). Adicione o campo `databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com/",` — precisa ser logo abaixo do campo `authDomain: "SEU_PROJETO.firebaseapp.com",` — mas `atenção`, essa chave será preenchida com o link que aparecer no `Realtime Database`.
+5. Cole em `js/firebase-config.example.js`, no lugar dos placeholders (`SUA_API_KEY_AQUI`, etc). Adicione o campo `databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com/",` — precisa ser logo abaixo do campo `authDomain: "SEU_PROJETO.firebaseapp.com",` — mas `atenção`, essa chave será preenchida com o link que aparecer no `Realtime Database`. Por fim, renomeie o arquivo para `firebase-config.js`.
 
 6. Em **Realtime Database → Regras**, use essas regras abaixo (somente o código entre as chaves {}) e publique (Ctrl + S):
 
