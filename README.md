@@ -1,4 +1,4 @@
-## Recomendo que abra esse arquivo no Visual Studio Code (VS Code)!!
+## Recomendo que abra esse arquivo no Visual Studio Code (VS Code) ou mude para o modo de `Código` na visualização no GitHub!!
 
 ## Estrutura
 
