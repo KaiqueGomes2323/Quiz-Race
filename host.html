@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Corrida — Painel do Host</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .wrap{ max-width:920px; margin:0 auto; padding:clamp(18px,4vw,32px) clamp(14px,4vw,20px) 80px; }
+  .top-row{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:28px; }
+  .panel{ padding:clamp(16px,4vw,24px); margin-bottom:20px; }
+  .panel h2{ font-size:17px; margin-bottom:4px; }
+  .panel .sub{ font-size:13px; margin-bottom:16px; }
+  .list-item{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:var(--asphalt-800); border:1px solid var(--line-faint);
+    border-radius:12px; padding:12px 14px; margin-bottom:8px;
+  }
+  .swatch{ width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+  .list-item .grow{ flex:1 1 140px; min-width:0; }
+  .list-item .grow strong{ display:block; font-size:14px; overflow-wrap:anywhere; }
+  .list-item .grow span{ font-size:12px; color:var(--text-low); }
+  .del{ color:var(--team-1); font-size:12px; font-weight:700; flex-shrink:0; }
+  .opt-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .opt-row{ display:flex; align-items:center; gap:8px; }
+  .opt-row input[type="radio"]{ width:auto; accent-color:var(--purple); flex-shrink:0; }
+  .hidden{ display:none !important; }
+  .stat-bar{ display:flex; gap:10px; flex-wrap:wrap; }
+  .stat{ background:var(--asphalt-800); border:1px solid var(--line-faint); border-radius:12px; padding:12px 16px; flex:1 1 120px; min-width:120px; }
+  .stat b{ display:block; font-family:var(--font-display); font-size:clamp(18px,4vw,22px); }
+  .stat span{ font-size:12px; color:var(--text-low); }
+  .q-current{ font-size:clamp(16px,3.5vw,19px); font-weight:700; line-height:1.4; overflow-wrap:anywhere; }
+  .team-progress{ display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .team-progress .bar-bg{ flex:1 1 100px; min-width:80px; height:10px; border-radius:999px; background:var(--asphalt-800); overflow:hidden; }
+  .team-progress .bar-fill{ height:100%; border-radius:999px; transition:width .5s ease; }
+  .team-progress .name{ width:110px; max-width:38vw; font-size:13px; font-weight:700; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .team-progress .badge{ width:70px; font-size:12px; color:var(--text-low); text-align:right; flex-shrink:0; }
+
+  /* --- responsivo: celular / tablet / notebook --- */
+  @media (max-width:640px){
+    .top-row{ justify-content:flex-start; }
+    #roomCodeBox{ width:100%; }
+  }
+  @media (max-width:520px){
+    .opt-grid{ grid-template-columns:1fr; }
+    .stat{ flex:1 1 45%; }
+    .team-progress .name{ width:auto; max-width:34vw; }
+  }
+  @media (min-width:1025px){
+    .wrap{ padding-left:0; padding-right:0; }
+  }
+</style>
+</head>
+<body>
+<div class="asphalt-bg"></div>
+
+<div class="wrap">
+
+  <div class="top-row">
+    <div>
+      <div class="row" style="gap:8px; margin-bottom:12px;">
+        <a href="index.html" class="btn-pill btn-back">Voltar</a>
+        <button id="btnTrocarSala" class="btn-pill btn-swap hidden">Trocar de sala</button>
+      </div>
+      <span class="tag">🏁 PAINEL DO HOST</span>
+      <h1 style="margin-top:10px;">Quiz Corrida</h1>
+    </div>
+    <div id="roomCodeBox" class="glass hidden" style="padding:14px 20px; text-align:center; position:relative;">
+      <div style="font-size:11px; color:var(--text-low); margin-bottom:2px;">CÓDIGO DA SALA</div>
+      <div class="code-badge" id="roomCodeDisplay" style="font-size:clamp(20px,5vw,26px);">-----</div>
+    </div>
+  </div>
+
+  <!-- CRIAR SALA -->
+  <div id="stepCreate" class="glass panel">
+    <h2>Criar uma nova sala</h2>
+    <p class="sub">Isso gera um código pra galera entrar e monta o painel de configuração.</p>
+    <button class="btn btn-primary" id="btnCriarSala">Criar sala</button>
+  </div>
+
+  <!-- CONFIGURAÇÃO (lobby) -->
+  <div id="stepConfig" class="hidden">
+
+    <div class="glass panel">
+      <div class="row" style="justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h2>Grupos</h2>
+          <p class="sub" style="margin-bottom:0;">Defina quantos grupos vai usar antes de compartilhar o código (até 12, máx. 10 pessoas cada). Não precisa criar time nenhum: cada jogador cai automaticamente no grupo com menos gente, mantendo tudo equilibrado.</p>
+        </div>
+      </div>
+      <div id="teamList" style="margin-top:14px;"></div>
+      <div class="row" style="margin-top:14px; align-items:flex-end;">
+        <div style="max-width:160px;">
+          <label for="numGruposInput">Quantos grupos</label>
+          <input id="numGruposInput" type="number" min="2" max="12" value="4">
+        </div>
+        <button class="btn btn-ghost" id="btnAtualizarGrupos" style="flex-shrink:0;">Atualizar grupos</button>
+      </div>
+      <p style="font-size:12px; margin-top:8px;">Mudar a quantidade reseta quem já entrou, só faça isso antes da galera começar a entrar, ou avise pra reentrarem.</p>
+    </div>
+
+    <div class="glass panel">
+      <div class="row" style="justify-content:space-between; flex-wrap:wrap;">
+        <h2 style="margin:0;">Perguntas</h2>
+        <span class="tag" title="A resposta correta é cifrada com AES-256 antes de ir pro Firebase">🔒 respostas protegidas com AES-256</span>
+      </div>
+      <p class="sub">Cada pergunta certa avança o grupo uma casa na pista. A corrida acaba quando as perguntas terminam.</p>
+      <div id="questionList"></div>
+
+      <div class="stack" style="margin-top:14px; padding-top:14px; border-top:1px solid var(--line-faint);">
+        <input id="qTextInput" maxlength="300" placeholder="Digite a pergunta">
+        <div class="opt-grid">
+          <div class="opt-row"><input type="radio" name="qCorrect" value="0" checked><input id="opt0" maxlength="120" placeholder="Alternativa A"></div>
+          <div class="opt-row"><input type="radio" name="qCorrect" value="1"><input id="opt1" maxlength="120" placeholder="Alternativa B"></div>
+          <div class="opt-row"><input type="radio" name="qCorrect" value="2"><input id="opt2" maxlength="120" placeholder="Alternativa C"></div>
+          <div class="opt-row"><input type="radio" name="qCorrect" value="3"><input id="opt3" maxlength="120" placeholder="Alternativa D"></div>
+        </div>
+        <p style="font-size:12px;">Marque a bolinha da alternativa correta.</p>
+        <button class="btn btn-ghost btn-block" id="btnAddQuestion">+ Adicionar pergunta</button>
+      </div>
+    </div>
+
+    <div class="glass panel">
+      <h2>Ritmo da corrida</h2>
+      <p class="sub">A corrida roda sozinha depois de iniciada: cada pergunta tem um tempo, a resposta é revelada e o jogo já passa pra próxima automaticamente.</p>
+      <label for="segundosPorPergunta">Segundos por pergunta</label>
+      <input id="segundosPorPergunta" type="number" min="5" max="60" value="20" style="max-width:140px;">
+    </div>
+
+    <div class="glass panel row" style="justify-content:space-between;">
+      <div>
+        <div style="font-weight:700; font-size:15px;">Pronto pra começar?</div>
+        <p style="font-size:13px;">Precisa de pelo menos 1 pergunta cadastrada. Depois de iniciar, o painel só acompanha.</p>
+        <p style="font-size:12px; color:var(--text-low); margin-top:4px;">Compartilhe o código da sala com a galera, cada um digita o nome e já entra num grupo.</p>
+      </div>
+      <div class="row">
+        <a id="linkTelao" href="#" target="_blank" class="btn btn-ghost">Abrir telão ↗</a>
+        <button class="btn btn-flag" id="btnIniciar">Iniciar corrida 🏁</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACOMPANHAMENTO DURANTE A CORRIDA (automática) -->
+  <div id="stepRace" class="hidden">
+
+    <div class="glass panel">
+      <div class="stat-bar">
+        <div class="stat"><b id="statIndex">1/1</b><span>PERGUNTA</span></div>
+        <div class="stat"><b id="statAnswered">0/0</b><span>TIMES RESPONDERAM</span></div>
+        <div class="stat"><b id="statTimer">-</b><span id="statTimerLabel">TEMPO</span></div>
+      </div>
+    </div>
+
+    <div class="glass panel">
+      <p style="font-size:12px; margin-bottom:6px;" id="qBoxLabel">PERGUNTA ATUAL</p>
+      <div class="q-current" id="currentQText">-</div>
+      <div id="revealBox" style="margin-top:14px;"></div>
+      <div class="row" style="margin-top:18px;">
+        <button class="btn btn-ghost" id="btnPular">Pular pergunta</button>
+        <button class="btn btn-ghost" id="btnEncerrar" style="color:var(--team-1);">Encerrar corrida</button>
+        <a id="linkTelao2" href="#" target="_blank" class="btn btn-ghost">Abrir telão ↗</a>
+      </div>
+    </div>
+
+    <div class="glass panel">
+      <h2>Posição na pista</h2>
+      <div id="raceProgress" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <!-- FIM DE JOGO -->
+  <div id="stepFinish" class="hidden glass panel" style="text-align:center; padding:clamp(28px,8vw,48px) clamp(16px,5vw,24px);">
+    <div style="font-size:clamp(34px,9vw,44px);">🏆</div>
+    <h2 style="font-size:clamp(19px,5vw,24px); margin-top:12px;">Corrida encerrada!</h2>
+    <p style="margin-top:8px;" id="finishText">-</p>
+    <div class="row" style="justify-content:center; margin-top:26px;">
+      <button class="btn btn-flag" id="btnJogarNovamente">Jogar de novo (mesmos times/perguntas) ↻</button>
+      <button class="btn btn-ghost" id="btnNovaSala">Criar sala nova</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/crypto-utils.js"></script>
+<script src="js/host.js"></script>
+</body>
+</html>

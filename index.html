@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Race — Entrar</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="asphalt-bg"></div>
+
+<div class="center-screen">
+  <div class="glass" style="width:100%; max-width:400px; padding:clamp(22px,6vw,36px);">
+    <div class="stack">
+      <div>
+        <span class="tag">🏁 QUIZ Race</span>
+        <h1 style="margin-top:12px;">Entrar na corrida</h1>
+        <p style="margin-top:6px;">Digite o código da sala e seu nome para entrar em um time.</p>
+      </div>
+
+      <div>
+        <label for="roomCode">Código da sala</label>
+        <input id="roomCode" maxlength="5" placeholder="EX: R7K2M" style="text-transform:uppercase; letter-spacing:0.15em; font-weight:700; text-align:center;">
+      </div>
+
+      <div>
+        <label for="playerName">Seu nome</label>
+        <input id="playerName" maxlength="24" placeholder="Como a galera te chama">
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnEntrar" style="margin-top:6px;">
+        Entrar na sala →
+      </button>
+
+      <p id="erro" style="color:var(--team-1); font-size:13.5px; display:none;"></p>
+
+      <a href="host.html" class="btn btn-ghost btn-block" style="margin-top:4px;">
+        Sou o host, quero criar uma sala
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/crypto-utils.js"></script>
+<script src="js/join.js"></script>
+</body>
+</html>
