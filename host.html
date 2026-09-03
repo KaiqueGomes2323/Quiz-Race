@@ -36,7 +36,6 @@
   .team-progress .name{ width:110px; max-width:38vw; font-size:13px; font-weight:700; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .team-progress .badge{ width:70px; font-size:12px; color:var(--text-low); text-align:right; flex-shrink:0; }
 
-  /* --- responsivo: celular / tablet / notebook --- */
   @media (max-width:640px){
     .top-row{ justify-content:flex-start; }
     #roomCodeBox{ width:100%; }
@@ -71,17 +70,25 @@
     </div>
   </div>
 
-  <!-- CRIAR SALA -->
   <div id="stepCreate" class="glass panel">
     <h2>Criar uma nova sala</h2>
     <p class="sub">Isso gera um código pra galera entrar e monta o painel de configuração.</p>
+
+    <div style="margin-bottom:18px;">
+      <label style="display:block; margin-bottom:8px;">Como a corrida vai rolar?</label>
+      <div class="opt-grid">
+        <div class="opt-row"><input type="radio" name="modoJogo" id="modoGrupo" value="grupo" checked><label for="modoGrupo" style="margin:0;">Em grupos (padrão)</label></div>
+        <div class="opt-row"><input type="radio" name="modoJogo" id="modoIndividual" value="individual"><label for="modoIndividual" style="margin:0;">Cada um por si</label></div>
+      </div>
+      <p style="font-size:12px; margin-top:8px;">Em grupos: a galera é dividida em times. Cada um por si: cada jogador vira seu próprio "time" de 1 pessoa, sem grupo nenhum.</p>
+    </div>
+
     <button class="btn btn-primary" id="btnCriarSala">Criar sala</button>
   </div>
 
-  <!-- CONFIGURAÇÃO (lobby) -->
   <div id="stepConfig" class="hidden">
 
-    <div class="glass panel">
+    <div id="painelGrupos" class="glass panel">
       <div class="row" style="justify-content:space-between; align-items:flex-start;">
         <div>
           <h2>Grupos</h2>
@@ -97,6 +104,12 @@
         <button class="btn btn-ghost" id="btnAtualizarGrupos" style="flex-shrink:0;">Atualizar grupos</button>
       </div>
       <p style="font-size:12px; margin-top:8px;">Mudar a quantidade reseta quem já entrou, só faça isso antes da galera começar a entrar, ou avise pra reentrarem.</p>
+    </div>
+
+    <div id="painelIndividual" class="glass panel hidden">
+      <h2>Modo: cada um por si</h2>
+      <p class="sub" style="margin-bottom:0;">Não tem grupo pra configurar aqui: assim que alguém entra com o código da sala, ela já vira seu próprio "time" de 1 pessoa na pista. Cabe até 40 jogadores.</p>
+      <div id="teamListIndividual" style="margin-top:14px;"></div>
     </div>
 
     <div class="glass panel">
@@ -140,7 +153,6 @@
     </div>
   </div>
 
-  <!-- ACOMPANHAMENTO DURANTE A CORRIDA (automática) -->
   <div id="stepRace" class="hidden">
 
     <div class="glass panel">
@@ -168,7 +180,6 @@
     </div>
   </div>
 
-  <!-- FIM DE JOGO -->
   <div id="stepFinish" class="hidden glass panel" style="text-align:center; padding:clamp(28px,8vw,48px) clamp(16px,5vw,24px);">
     <div style="font-size:clamp(34px,9vw,44px);">🏆</div>
     <h2 style="font-size:clamp(19px,5vw,24px); margin-top:12px;">Corrida encerrada!</h2>
@@ -183,9 +194,12 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/common.js"></script>
 <script src="js/crypto-utils.js"></script>
+<script src="js/settings.js"></script>
 <script src="js/host.js"></script>
 </body>
 </html>

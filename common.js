@@ -5,6 +5,7 @@ const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','�
 
 const MAX_JOGADORES_POR_GRUPO = 10;
 const MAX_GRUPOS = 12;
+const MAX_JOGADORES_INDIVIDUAL = 40;
 
 function gerarGrupos(quantidade){
   const teams = {};
@@ -25,6 +26,14 @@ function gerarCodigoSala(){
   let code = '';
   for(let i=0;i<5;i++) code += chars[Math.floor(Math.random()*chars.length)];
   return code;
+}
+
+function corIndexDeterministico(id, tamanho){
+  let hash = 0;
+  for(let i = 0; i < id.length; i++){
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return hash % tamanho;
 }
 
 function gerarIdJogador(){

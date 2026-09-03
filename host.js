@@ -16,13 +16,15 @@ const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 
 document.getElementById('btnCriarSala').addEventListener('click', async () => {
   const code = gerarCodigoSala();
+  const modo = document.querySelector('input[name="modoJogo"]:checked').value;
   const initialRoom = {
     status: 'lobby',
     phase: 'lobby',
     currentIndex: 0,
     questionSeconds: 20,
     createdAt: Date.now(),
-    teams: gerarGrupos(4),
+    mode: modo,
+    teams: modo === 'individual' ? {} : gerarGrupos(4),
     players: {},
     questions: {}
   };
@@ -64,7 +66,15 @@ async function render(){
     stepConfig.classList.remove('hidden');
     stepRace.classList.add('hidden');
     stepFinish.classList.add('hidden');
-    renderTeams();
+    if(currentRoom.mode === 'individual'){
+      document.getElementById('painelGrupos').classList.add('hidden');
+      document.getElementById('painelIndividual').classList.remove('hidden');
+      renderTeamsIndividual();
+    } else {
+      document.getElementById('painelGrupos').classList.remove('hidden');
+      document.getElementById('painelIndividual').classList.add('hidden');
+      renderTeams();
+    }
     await renderQuestions();
   } else if(currentRoom.status === 'racing'){
     stepConfig.classList.add('hidden');
@@ -97,6 +107,24 @@ function renderTeams(){
     el.innerHTML = `
       <div class="swatch" style="background:${TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length]}; box-shadow:0 0 8px ${TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length]}99;"></div>
       <div class="grow"><strong>${escapeHtml(t.name)}</strong><span>${qtd}/${MAX_JOGADORES_POR_GRUPO} jogador${qtd===1?'':'es'}</span></div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+function renderTeamsIndividual(){
+  const teams = currentRoom.teams || {};
+  const box = document.getElementById('teamListIndividual');
+  const ids = Object.keys(teams);
+
+  box.innerHTML = ids.length ? '' : '<p style="font-size:13px;">Ninguém entrou ainda — compartilhe o código da sala.</p>';
+  ids.forEach((tid) => {
+    const t = teams[tid];
+    const el = document.createElement('div');
+    el.className = 'list-item';
+    el.innerHTML = `
+      <div class="swatch" style="background:${TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length]}; box-shadow:0 0 8px ${TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length]}99;"></div>
+      <div class="grow"><strong>${escapeHtml(t.name)}</strong></div>
     `;
     box.appendChild(el);
   });

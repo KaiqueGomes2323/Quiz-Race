@@ -43,6 +43,35 @@ btnEntrar.addEventListener('click', async () => {
     }
 
     const teamIds = Object.keys(room.teams || {});
+    let teamId = null;
+    const updates = {};
+
+    if(room.mode === 'individual'){
+      if(teamIds.length >= MAX_JOGADORES_INDIVIDUAL){
+        mostrarErro(`A sala já está cheia (máximo de ${MAX_JOGADORES_INDIVIDUAL} jogadores).`);
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = 'Entrar na sala →';
+        return;
+      }
+
+      const playerId = gerarIdJogador();
+      teamId = 'ti_' + playerId;
+
+      // Escreve o time primeiro e espera confirmar, para que a regra
+      // "players/$playerId/teamId" (que exige o time já existir) passe.
+      await db.ref(`rooms/${roomCode}/teams/${teamId}`).set({
+        name: playerName,
+        colorIndex: corIndexDeterministico(playerId, TEAM_COLORS_HEX.length),
+        position: 0,
+        players: { [playerId]: playerName }
+      });
+      await db.ref(`rooms/${roomCode}/players/${playerId}`).set({ name: playerName, teamId });
+
+      salvarSessaoJogador(roomCode, playerId, playerName, teamId);
+      window.location.href = `player.html?room=${roomCode}`;
+      return;
+    }
+
     if(teamIds.length === 0){
       mostrarErro('O host ainda não criou os times.');
       btnEntrar.disabled = false;
@@ -50,7 +79,6 @@ btnEntrar.addEventListener('click', async () => {
       return;
     }
 
-    let teamId = null;
     let menorQtd = Infinity;
     teamIds.forEach(tid => {
       const qtd = Object.keys(room.teams[tid].players || {}).length;
@@ -65,7 +93,6 @@ btnEntrar.addEventListener('click', async () => {
     }
 
     const playerId = gerarIdJogador();
-    const updates = {};
     updates[`rooms/${roomCode}/teams/${teamId}/players/${playerId}`] = playerName;
     updates[`rooms/${roomCode}/players/${playerId}`] = { name: playerName, teamId };
     await db.ref().update(updates);
