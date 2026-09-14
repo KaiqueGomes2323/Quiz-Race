@@ -27,6 +27,11 @@ js/crypto-utils.js  → criptografia AES-256 (cifra a resposta correta antes de 
 scripts/generate-firebase-config.js
 ```
 
+## Crie uma pasta "Animacoes" dentro da pasta principal do projeto e adicione os arquivos arquivos abaixo nela:
+```
+Animacoes/Ambulancia.mp4
+```
+
 ## 1. Configurar o Firebase
 
 1. No [Firebase Console](https://console.firebase.google.com), abra (ou crie) um projeto.
