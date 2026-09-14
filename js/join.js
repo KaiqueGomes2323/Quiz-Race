@@ -56,9 +56,7 @@ btnEntrar.addEventListener('click', async () => {
 
       const playerId = gerarIdJogador();
       teamId = 'ti_' + playerId;
-
-      // Escreve o time primeiro e espera confirmar, para que a regra
-      // "players/$playerId/teamId" (que exige o time já existir) passe.
+        
       await db.ref(`rooms/${roomCode}/teams/${teamId}`).set({
         name: playerName,
         colorIndex: corIndexDeterministico(playerId, TEAM_COLORS_HEX.length),

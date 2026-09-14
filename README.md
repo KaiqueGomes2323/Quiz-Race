@@ -22,6 +22,10 @@ js/common.js      → helpers compartilhados
 js/join.js, host.js, player.js, display.js → lógica de cada tela
 js/crypto-utils.js  → criptografia AES-256 (cifra a resposta correta antes de salvar no Firebase)
 ```
+## Crie uma pasta "scripts" dentro da pasta principal do projeto e adicione os arquivos arquivos abaixo nela:
+```
+scripts/generate-firebase-config.js
+```
 
 ## 1. Configurar o Firebase
 
@@ -76,6 +80,12 @@ const firebaseConfig = {
         "createdAt": {
           ".validate": "newData.isNumber()"
         },
+        "mode": {
+          ".validate": "newData.isString() && (newData.val() == 'grupo' || newData.val() == 'individual' || newData.val() == 'dinamico')"
+        },
+        "maxPorGrupo": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5000"
+        },
         "phaseEndsAt": {
           ".validate": "newData.isNumber()"
         },
@@ -98,7 +108,7 @@ const firebaseConfig = {
 
         "teams": {
           "$teamId": {
-            ".validate": "$teamId.matches(/^t[0-9]{1,2}$/)",
+            ".validate": "$teamId.matches(/^t[a-z0-9_]{1,24}$/)",
             "name": {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40"
             },
@@ -137,7 +147,7 @@ const firebaseConfig = {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300"
             },
             "options": {
-              ".validate": "newData.hasChildren(['0','1','2','3'])",
+              ".validate": "newData.hasChildren(['0','1'])",
               "$i": {
                 ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
               }
@@ -166,6 +176,7 @@ const firebaseConfig = {
     }
   }
 }
+
 
 ```
 

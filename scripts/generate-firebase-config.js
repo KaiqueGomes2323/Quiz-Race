@@ -1,8 +1,3 @@
-// Gera js/firebase-config.js a partir das variáveis de ambiente.
-// Roda automaticamente no build do Netlify (veja o "Comando de construção").
-// Localmente, crie um arquivo .env (ou exporte as variáveis no terminal)
-// e rode: node scripts/generate-firebase-config.js
-
 const fs = require('fs');
 const path = require('path');
 
