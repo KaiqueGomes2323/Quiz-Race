@@ -2,6 +2,7 @@ const TEAM_COLORS = ['var(--team-1)','var(--team-2)','var(--team-3)','var(--team
 const TEAM_COLORS_HEX = ['#ff4d6a','#3ad4ff','#3dffb0','#ffe14d','#c26bff','#ff9a47','#ff6ec7','#6effc0','#ffde59','#7a8cff','#ff8a5c','#9dff5c'];
 const TEAM_NAMES = ['Equipe Vermelha','Equipe Ciano','Equipe Verde','Equipe Amarela','Equipe Roxa','Equipe Laranja','Equipe Rosa','Equipe Menta','Equipe Dourada','Equipe Índigo','Equipe Coral','Equipe Lima'];
 const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔','🏍️','🚛'];
+const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, null, null];
 
 const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
 const MAX_JOGADORES_POR_GRUPO_LIMITE = 5000;

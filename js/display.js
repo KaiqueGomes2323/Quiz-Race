@@ -1,6 +1,45 @@
 const roomCode = getParam('room');
 const root = document.getElementById('root');
 let tickInterval = null;
+let raceEls = null; // { qboxEl, tracksEl, cars:{ [teamId]: {row, carEl, statusEl} } }
+
+function resetRaceEls(){
+  raceEls = null;
+}
+
+// Anima o carro de fromPct até toPct "na mão", frame a frame, em vez de
+// depender da transição do CSS. Assim o movimento sempre acontece de forma
+// visível e controlada, não importa o que esteja causando o pulo no
+// navegador/SO usado pro telão.
+function animateCarTo(carEl, fromPct, toPct, duration = 1400){
+  if(carEl._raceAnimId){
+    cancelAnimationFrame(carEl._raceAnimId);
+    carEl._raceAnimId = null;
+  }
+  if(fromPct === toPct){
+    carEl.style.left = toPct + '%';
+    carEl._racePct = toPct;
+    return;
+  }
+  const start = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+  function step(now){
+    const elapsed = now - start;
+    const t = Math.min(1, elapsed / duration);
+    const eased = easeOutCubic(t);
+    const value = fromPct + (toPct - fromPct) * eased;
+    carEl.style.left = value + '%';
+    carEl._racePct = value;
+    if(t < 1){
+      carEl._raceAnimId = requestAnimationFrame(step);
+    } else {
+      carEl._raceAnimId = null;
+      carEl._racePct = toPct;
+    }
+  }
+  carEl._raceAnimId = requestAnimationFrame(step);
+}
 
 function iniciarBarraTempo(phaseEndsAt, totalSeconds){
   clearInterval(tickInterval);
@@ -29,15 +68,18 @@ if(!roomCode){
   db.ref(`rooms/${roomCode}`).on('value', async snap => {
     const room = snap.val();
     if(!room){
+      resetRaceEls();
       root.innerHTML = `<div class="glass waiting-box"><p>Sala não encontrada.</p></div>`;
       return;
     }
 
     if(room.status === 'lobby'){
+      resetRaceEls();
       renderLobby(room);
     } else if(room.status === 'racing'){
       await renderRace(room);
     } else if(room.status === 'finished'){
+      resetRaceEls();
       renderFinished(room);
     }
   });
@@ -102,26 +144,68 @@ async function renderRace(room){
     `;
   }
 
-  const tracksHtml = teamIds.map(tid => {
+  // Monta a estrutura só na primeira vez que entramos em 'racing'.
+  // Nas atualizações seguintes reaproveitamos os MESMOS elementos do carro,
+  // só trocando o style.left — é isso que deixa a transição do CSS (.car)
+  // rodar de verdade, em vez de o carro nascer de novo já no final (teleporte).
+  if(!raceEls){
+    root.innerHTML = `<div id="qboxContainer"></div><div id="tracksContainer"></div>`;
+    raceEls = {
+      qboxEl: document.getElementById('qboxContainer'),
+      tracksEl: document.getElementById('tracksContainer'),
+      cars: {}
+    };
+  }
+
+  raceEls.qboxEl.innerHTML = questionHtml;
+
+  teamIds.forEach(tid => {
     const t = teams[tid];
     const pct = Math.min(96, ((t.position||0) / total) * 96);
     const color = TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length];
     const car = CAR_EMOJI[t.colorIndex % CAR_EMOJI.length];
-    return `
-      <div class="track-row">
+    const animSrc = CAR_ANIMATIONS[t.colorIndex % CAR_ANIMATIONS.length];
+    const carHtml = animSrc
+      ? `<video class="car-video" src="${animSrc}" autoplay loop muted playsinline></video>`
+      : car;
+
+    let entry = raceEls.cars[tid];
+    if(!entry){
+      const row = document.createElement('div');
+      row.className = 'track-row';
+      row.innerHTML = `
         <div class="track-label">
           <span style="color:${color}; text-shadow:0 0 10px ${color}77;">${escapeHtml(t.name)}</span>
-          <span class="status">${t.position||0}/${total}</span>
+          <span class="status"></span>
         </div>
         <div class="track">
           <div class="finish-flag"></div>
-          <div class="car" style="left:${pct}%;">${car}</div>
+          <div class="car">${carHtml}</div>
         </div>
-      </div>
-    `;
-  }).join('');
+      `;
+      raceEls.tracksEl.appendChild(row);
+      entry = {
+        row,
+        statusEl: row.querySelector('.status'),
+        carEl: row.querySelector('.car')
+      };
+      raceEls.cars[tid] = entry;
+      // Primeira montagem: posiciona sem animar (o carro só deve "andar"
+      // quando o placar muda de fato, não quando a tela é montada/recarregada).
+      entry.carEl.style.left = pct + '%';
+      entry.carEl._racePct = pct;
+    } else {
+      // já existia: anima do valor atualmente exibido até o novo valor.
+      const from = entry.carEl._racePct !== undefined ? entry.carEl._racePct : pct;
+      if(from !== pct){
+        animateCarTo(entry.carEl, from, pct);
+      }
+    }
+    entry.statusEl.textContent = `${t.position||0}/${total}`;
+  });
 
-  root.innerHTML = questionHtml + tracksHtml;
+  // Reordena as linhas pelo placar sem recriá-las (mantém o estado/transição de cada carro)
+  teamIds.forEach(tid => raceEls.tracksEl.appendChild(raceEls.cars[tid].row));
 
   if(room.phase === 'question'){
     iniciarBarraTempo(room.phaseEndsAt, room.questionSeconds);
