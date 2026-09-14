@@ -54,8 +54,19 @@
   .car{
     position:absolute; top:50%; transform:translate(-6px, -50%) scaleX(-1);
     font-size:clamp(22px, 4.5vw, 34px);
-    transition:left 1s cubic-bezier(.2,.7,.3,1);
+    /* O movimento do carro NÃO depende mais de transição CSS — é animado
+       manualmente via requestAnimationFrame em display.js (função
+       animateCarTo). Isso evita qualquer dependência de como/quando o
+       navegador decide "commitar" um frame entre dois writes de left,
+       e também não é afetado por configs de "reduzir movimento" do SO. */
     filter:drop-shadow(0 4px 10px rgba(0,0,0,0.55)) drop-shadow(0 0 10px rgba(66,232,255,0.35));
+  }
+  .car-video{
+    display:block;
+    width:clamp(38px, 7.5vw, 58px);
+    height:auto;
+    border-radius:6px;
+    transform:scaleX(-1);
   }
   .waiting-box, .finish-box{
     text-align:center; padding:clamp(36px,10vw,70px) 20px;
