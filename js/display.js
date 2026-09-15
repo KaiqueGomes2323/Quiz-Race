@@ -1,3 +1,9 @@
+// Se o Firebase não carregou, o aviso já está na tela (js/firebase-guard.js).
+// Paramos aqui para não encher o console de ReferenceError em cascata.
+if(window.__firebaseOk === false){
+  throw new Error('Firebase não inicializado — veja o aviso na tela.');
+}
+
 const roomCode = getParam('room');
 const root = document.getElementById('root');
 let tickInterval = null;

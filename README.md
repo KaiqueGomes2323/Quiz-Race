@@ -197,3 +197,62 @@ npx serve .
 5. O host clica em **Iniciar corrida**. Cada jogador responde no próprio dispositivo; quando a maioria do time acerta, o carrinho do time avança uma casa na pista.
 6. O host clica em **Revelar respostas** → mostra quem acertou → **Próxima pergunta** → segue até a última.
 7. Ao final, o telão e as telas dos jogadores mostram o time vencedor.
+
+
+## 4. Deploy na Netlify
+
+O arquivo `js/firebase-config.js` está no `.gitignore` de propósito (ele carrega a
+passphrase do AES), então **ele não existe no repositório**. Quem cria esse arquivo
+no deploy é o `scripts/generate-firebase-config.js`, e quem manda a Netlify rodar
+esse script é o `netlify.toml`.
+
+Se o `netlify.toml` ou as variáveis de ambiente estiverem faltando, o site publicado
+responde **404 em `/js/firebase-config.js`** e todas as páginas quebram com
+`ReferenceError: db is not defined`.
+
+### Passo a passo
+
+1. Confirme que o `netlify.toml` está commitado na raiz do repositório.
+2. Na Netlify, vá em **Site configuration → Environment variables** e cadastre as 8
+   variáveis abaixo:
+
+   | Variável | Onde achar |
+   |---|---|
+   | `FIREBASE_API_KEY` | Firebase Console → Configurações do projeto → Seus apps |
+   | `FIREBASE_AUTH_DOMAIN` | idem |
+   | `FIREBASE_DATABASE_URL` | idem |
+   | `FIREBASE_PROJECT_ID` | idem |
+   | `FIREBASE_STORAGE_BUCKET` | idem |
+   | `FIREBASE_MESSAGING_SENDER_ID` | idem |
+   | `FIREBASE_APP_ID` | idem |
+   | `AES_SECRET_PASSPHRASE` | frase secreta escolhida por você |
+
+3. Dispare um novo deploy (**Deploys → Trigger deploy → Clear cache and deploy site**).
+4. No log do deploy, procure a linha `Gerado: .../js/firebase-config.js`. Se aparecer
+   `Faltam variáveis de ambiente: ...`, alguma das 8 não foi cadastrada.
+5. Teste abrindo `https://SEU-SITE.netlify.app/js/firebase-config.js` no navegador:
+   tem que vir o conteúdo do arquivo, não um 404.
+
+### Se algo falhar
+
+O `js/firebase-guard.js` roda logo depois do config em todas as páginas. Quando o
+config não carrega, ele mostra um aviso na tela explicando o que houve, em vez de
+deixar o console cheio de `ReferenceError`.
+
+## 5. Nota de segurança sobre o AES
+
+A `AES_SECRET_PASSPHRASE` acaba dentro de `js/firebase-config.js`, que é um arquivo
+JavaScript público — qualquer visitante consegue abrir e ler. Variável de ambiente
+protege o repositório, não o navegador.
+
+Na prática isso significa que a criptografia do `correctEnc` protege contra alguém que
+esteja bisbilhotando o banco por fora, mas **não** contra um jogador determinado: o
+`player.js` lê o nó `rooms/$codigo` inteiro (incluindo `questions/$id/correctEnc`) e a
+chave está à mão na mesma página.
+
+Para um seminário/sala de aula isso costuma ser aceitável. Se precisar que seja à prova
+de trapaça, a correção é estrutural: separar as perguntas em um ramo que o jogador não
+lê (ex.: `rooms/$codigo/publico` vs `rooms/$codigo/gabarito`), liberar leitura só do
+ramo público nas regras e fazer o `player.js` assinar caminhos específicos em vez do nó
+inteiro. Regra do Realtime Database não filtra filhos: se o pai é legível, tudo abaixo
+dele também é.

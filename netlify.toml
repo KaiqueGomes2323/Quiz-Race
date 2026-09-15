@@ -1,0 +1,21 @@
+[build]
+  # Gera js/firebase-config.js a partir das variáveis de ambiente antes de publicar.
+  # Sem isso o arquivo (que está no .gitignore) nunca chega ao site e o deploy
+  # quebra com 404 em /js/firebase-config.js.
+  command = "node scripts/generate-firebase-config.js"
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Nunca deixar o HTML em cache: evita servir uma página antiga que aponte
+# para um config que mudou.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/firebase-config.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

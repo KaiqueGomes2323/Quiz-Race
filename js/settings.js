@@ -80,7 +80,9 @@ function settingsApply(settings){
   });
 
   function settingsSyncWithFirestore(onRemoteUpdate){
-    if(typeof firebase === 'undefined' || !firebase.auth || !firebase.firestore){
+    // As configurações são só visuais: se o Firebase não carregou, a página
+    // continua funcionando com o que estiver no localStorage.
+    if(typeof auth === 'undefined' || typeof dbFirestore === 'undefined'){
       return;
     }
 
