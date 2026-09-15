@@ -10,13 +10,13 @@ const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
 // telão já ocupam 2 — 90 deixa uma margem de segurança confortável sem
 // depender de contar jogador por jogador.
 const MAX_JOGADORES_POR_GRUPO_LIMITE = 90;
-const MAX_GRUPOS = 10;
+const MAX_GRUPOS = 18;
 const MAX_JOGADORES_INDIVIDUAL = 40;
 
 // No modo "Em grupos (padrão)" o total de jogadores é fixo em
 // MAX_JOGADORES_POR_GRUPO_LIMITE (90), então o limite por grupo é sempre
-// recalculado a partir da quantidade de grupos: 10 grupos -> 9 por grupo,
-// 5 grupos -> 18 por grupo, e assim por diante.
+// recalculado a partir da quantidade de grupos: 18 grupos -> 5 por grupo,
+// 10 grupos -> 9 por grupo, 5 grupos -> 18 por grupo, e assim por diante.
 function calcMaxPorGrupoPadrao(quantidadeGrupos){
   return Math.max(1, Math.floor(MAX_JOGADORES_POR_GRUPO_LIMITE / quantidadeGrupos));
 }
@@ -54,7 +54,7 @@ function gerarGrupos(quantidade){
   for(let i = 0; i < quantidade; i++){
     const tid = 't' + i;
     teams[tid] = {
-      name: TEAM_NAMES[i % TEAM_NAMES.length],
+      name: nomeGrupoDinamico(i),
       colorIndex: i,
       position: 0,
       players: {}
