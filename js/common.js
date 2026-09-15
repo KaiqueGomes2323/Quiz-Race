@@ -1,6 +1,6 @@
 const TEAM_COLORS = ['var(--team-1)','var(--team-2)','var(--team-3)','var(--team-4)','var(--team-5)','var(--team-6)','var(--team-7)','var(--team-8)','var(--team-9)','var(--team-10)','var(--team-11)','var(--team-12)'];
-const TEAM_COLORS_HEX = ['#ff4d6a','#3ad4ff','#3dffb0','#ffe14d','#c26bff','#ff9a47','#ff6ec7','#6effc0','#ffde59','#7a8cff','#ff8a5c','#9dff5c'];
-const TEAM_NAMES = ['Equipe Vermelha','Equipe Ciano','Equipe Verde','Equipe Amarela','Equipe Roxa','Equipe Laranja','Equipe Rosa','Equipe Menta','Equipe Dourada','Equipe Índigo','Equipe Coral','Equipe Lima'];
+const TEAM_COLORS_HEX = ['#ff4d6a','#3ad4ff','#3dffb0','#ffe14d','#c26bff','#ff9a47','#ff6ec7','#b8c4cf','#c9793d','#7a8cff','#ff2fd6','#9dff5c'];
+const TEAM_NAMES = ['Equipe Vermelha','Equipe Ciano','Equipe Verde','Equipe Amarela','Equipe Roxa','Equipe Laranja','Equipe Rosa','Equipe Cinza','Equipe Marrom','Equipe Índigo','Equipe Magenta','Equipe Lima'];
 const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔','🏍️','🚛'];
 const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, null, null];
 
