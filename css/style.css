@@ -34,18 +34,24 @@
   --glass-grad-2:rgba(255,255,255,0.015);
   --glass-shadow-ambient:rgba(0,0,0,0.6);
 
-  --team-1:#ff4d6a; 
-  --team-2:#3ad4ff; 
-  --team-3:#3dffb0; 
-  --team-4:#ffe14d; 
-  --team-5:#c26bff; 
-  --team-6:#ff9a47; 
-  --team-7:#ff6ec7; 
-  --team-8:#b8c4cf; 
-  --team-9:#c9793d; 
-  --team-10:#7a8cff; 
-  --team-11:#ff2fd6; 
-  --team-12:#9dff5c; 
+  --team-1:#ea3232; 
+  --team-2:#ea7032; 
+  --team-3:#e8a620; 
+  --team-4:#eaea32; 
+  --team-5:#adea32; 
+  --team-6:#70ea32; 
+  --team-7:#32ea32; 
+  --team-8:#32ea70; 
+  --team-9:#32eaad; 
+  --team-10:#32eaea; 
+  --team-11:#4eb8ed; 
+  --team-12:#4e83ed; 
+  --team-13:#4e4eed; 
+  --team-14:#834eed; 
+  --team-15:#ad32ea; 
+  --team-16:#ea32ea; 
+  --team-17:#ea32ad; 
+  --team-18:#ea3270; 
 
   --radius-card:18px;
   --radius-pill:999px;

@@ -1,8 +1,11 @@
-const TEAM_COLORS = ['var(--team-1)','var(--team-2)','var(--team-3)','var(--team-4)','var(--team-5)','var(--team-6)','var(--team-7)','var(--team-8)','var(--team-9)','var(--team-10)','var(--team-11)','var(--team-12)'];
-const TEAM_COLORS_HEX = ['#ff4d6a','#3ad4ff','#3dffb0','#ffe14d','#c26bff','#ff9a47','#ff6ec7','#b8c4cf','#c9793d','#7a8cff','#ff2fd6','#9dff5c'];
-const TEAM_NAMES = ['Equipe Vermelha','Equipe Ciano','Equipe Verde','Equipe Amarela','Equipe Roxa','Equipe Laranja','Equipe Rosa','Equipe Cinza','Equipe Marrom','Equipe Índigo','Equipe Magenta','Equipe Lima'];
-const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔','🏍️','🚛'];
-const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, null, null];
+// 18 cores espaçadas uniformemente em matiz (passo de 20°) para ficarem
+// claramente diferentes entre si mesmo lado a lado — cobre exatamente o
+// MAX_GRUPOS (18), então nenhuma equipe deveria repetir cor/nome no uso normal.
+const TEAM_COLORS = ['var(--team-1)','var(--team-2)','var(--team-3)','var(--team-4)','var(--team-5)','var(--team-6)','var(--team-7)','var(--team-8)','var(--team-9)','var(--team-10)','var(--team-11)','var(--team-12)','var(--team-13)','var(--team-14)','var(--team-15)','var(--team-16)','var(--team-17)','var(--team-18)'];
+const TEAM_COLORS_HEX = ['#ea3232','#ea7032','#e8a620','#eaea32','#adea32','#70ea32','#32ea32','#32ea70','#32eaad','#32eaea','#4eb8ed','#4e83ed','#4e4eed','#834eed','#ad32ea','#ea32ea','#ea32ad','#ea3270'];
+const TEAM_NAMES = ['Equipe Vermelha','Equipe Laranja','Equipe Dourada','Equipe Amarela','Equipe Lima','Equipe Verde','Equipe Esmeralda','Equipe Menta','Equipe Turquesa','Equipe Ciano','Equipe Azul','Equipe Anil','Equipe Índigo','Equipe Violeta','Equipe Roxa','Equipe Magenta','Equipe Rosa','Equipe Coral'];
+const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔','🏍️','🚛','🚚','🚜','🚲','🛵','🚂','🚁'];
+const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
 
 const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
 // Temporariamente limitado a 90 (era 5000): no plano Spark do Firebase o
