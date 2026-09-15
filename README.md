@@ -256,3 +256,28 @@ lê (ex.: `rooms/$codigo/publico` vs `rooms/$codigo/gabarito`), liberar leitura 
 ramo público nas regras e fazer o `player.js` assinar caminhos específicos em vez do nó
 inteiro. Regra do Realtime Database não filtra filhos: se o pai é legível, tudo abaixo
 dele também é.
+
+
+## 6. Regras do Firestore
+
+O `database.rules.json` cobre só o **Realtime Database** (as salas do jogo). As
+preferências visuais do `settings.js` ficam no **Firestore**, na coleção
+`userSettings`, um documento por uid anônimo — e o Firestore tem regras próprias,
+separadas.
+
+Se elas não forem publicadas, o Firestore em modo de produção nega tudo e o console
+mostra:
+
+```
+Falha ao sincronizar configurações com o Firestore:
+FirebaseError: Missing or insufficient permissions.
+```
+
+O arquivo `firestore.rules` na raiz resolve isso. Para publicar:
+
+- **Pelo console:** Firebase Console → Firestore Database → aba **Regras** → cole o
+  conteúdo de `firestore.rules` → **Publicar**.
+- **Pela CLI:** `firebase deploy --only firestore:rules`.
+
+Confira também que o provedor **Anônimo** está ativo em Authentication → Sign-in
+method, senão o login que o `settings.js` faz nem chega a acontecer.
