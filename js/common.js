@@ -55,7 +55,7 @@ function gerarGrupos(quantidade){
     const tid = 't' + i;
     teams[tid] = {
       name: nomeGrupoDinamico(i),
-      colorIndex: i,
+      colorIndex: i % TEAM_COLORS_HEX.length,
       position: 0,
       players: {}
     };
