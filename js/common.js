@@ -10,8 +10,16 @@ const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
 // telão já ocupam 2 — 90 deixa uma margem de segurança confortável sem
 // depender de contar jogador por jogador.
 const MAX_JOGADORES_POR_GRUPO_LIMITE = 90;
-const MAX_GRUPOS = 12;
+const MAX_GRUPOS = 10;
 const MAX_JOGADORES_INDIVIDUAL = 40;
+
+// No modo "Em grupos (padrão)" o total de jogadores é fixo em
+// MAX_JOGADORES_POR_GRUPO_LIMITE (90), então o limite por grupo é sempre
+// recalculado a partir da quantidade de grupos: 10 grupos -> 9 por grupo,
+// 5 grupos -> 18 por grupo, e assim por diante.
+function calcMaxPorGrupoPadrao(quantidadeGrupos){
+  return Math.max(1, Math.floor(MAX_JOGADORES_POR_GRUPO_LIMITE / quantidadeGrupos));
+}
 
 // Quanto tempo esperar depois que o host cai (aba fechada, internet caiu,
 // notebook travou) antes de considerar a sala "abandonada" e limpável.

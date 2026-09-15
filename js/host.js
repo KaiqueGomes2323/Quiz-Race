@@ -51,7 +51,7 @@ document.getElementById('btnCriarSala').addEventListener('click', async (ev) => 
     questionSeconds: 20,
     createdAt: Date.now(),
     mode: modo,
-    maxPorGrupo: MAX_JOGADORES_POR_GRUPO_PADRAO,
+    maxPorGrupo: modo === 'grupo' ? calcMaxPorGrupoPadrao(4) : MAX_JOGADORES_POR_GRUPO_PADRAO,
     teams: modo === 'grupo' ? gerarGrupos(4) : {},
     players: {},
     questions: {}
@@ -187,9 +187,9 @@ function renderTeams(){
   const numInput = document.getElementById('numGruposInput');
   if(document.activeElement !== numInput) numInput.value = ids.length || 4;
 
-  const maxPorGrupo = currentRoom.maxPorGrupo || MAX_JOGADORES_POR_GRUPO_PADRAO;
-  const maxInput = document.getElementById('maxPorGrupoInput');
-  if(document.activeElement !== maxInput) maxInput.value = maxPorGrupo;
+  const maxPorGrupo = currentRoom.maxPorGrupo || calcMaxPorGrupoPadrao(ids.length || 4);
+  const maxDisplay = document.getElementById('maxPorGrupoCalc');
+  if(maxDisplay && document.activeElement !== numInput) maxDisplay.textContent = maxPorGrupo;
 
   box.innerHTML = ids.length ? '' : '<p style="font-size:13px;">Nenhum grupo ainda — clique em "Atualizar grupos".</p>';
   ids.forEach((tid) => {
@@ -253,8 +253,19 @@ inputMaxPorGrupoDinamico.addEventListener('change', async () => {
   await db.ref(`rooms/${roomCode}`).update({ maxPorGrupo: n });
 });
 
+const numGruposInputEl = document.getElementById('numGruposInput');
+
+// Mostra o limite por grupo recalculado em tempo real enquanto o host
+// digita, antes mesmo de clicar em "Atualizar grupos".
+numGruposInputEl.addEventListener('input', () => {
+  const n = Math.min(MAX_GRUPOS, Math.max(2, parseInt(numGruposInputEl.value, 10) || 2));
+  const maxDisplay = document.getElementById('maxPorGrupoCalc');
+  if(maxDisplay) maxDisplay.textContent = calcMaxPorGrupoPadrao(n);
+});
+
 document.getElementById('btnAtualizarGrupos').addEventListener('click', async () => {
-  const n = Math.min(MAX_GRUPOS, Math.max(2, parseInt(document.getElementById('numGruposInput').value, 10) || 4));
+  const n = Math.min(MAX_GRUPOS, Math.max(2, parseInt(numGruposInputEl.value, 10) || 4));
+  const maxPorGrupo = calcMaxPorGrupoPadrao(n);
 
   const teams = currentRoom.teams || {};
   const jaTemJogador = Object.values(teams).some(t => Object.keys(t.players || {}).length > 0);
@@ -264,15 +275,9 @@ document.getElementById('btnAtualizarGrupos').addEventListener('click', async ()
 
   await db.ref(`rooms/${roomCode}`).update({
     teams: gerarGrupos(n),
+    maxPorGrupo,
     players: null
   });
-});
-
-const inputMaxPorGrupo = document.getElementById('maxPorGrupoInput');
-inputMaxPorGrupo.addEventListener('change', async () => {
-  const n = Math.min(MAX_JOGADORES_POR_GRUPO_LIMITE, Math.max(1, parseInt(inputMaxPorGrupo.value, 10) || MAX_JOGADORES_POR_GRUPO_PADRAO));
-  inputMaxPorGrupo.value = n;
-  await db.ref(`rooms/${roomCode}`).update({ maxPorGrupo: n });
 });
 
 async function renderQuestions(){

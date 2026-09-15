@@ -94,25 +94,19 @@
       <div class="row" style="justify-content:space-between; align-items:flex-start;">
         <div>
           <h2>Grupos</h2>
-          <p class="sub" style="margin-bottom:0;">Defina quantos grupos vai usar e o limite de pessoas por grupo antes de compartilhar o código (até 12 grupos). Não precisa criar time nenhum: cada jogador cai automaticamente no grupo com menos gente, mantendo tudo equilibrado.</p>
+          <p class="sub" style="margin-bottom:0;">Defina quantos grupos vai usar antes de compartilhar o código (até 10 grupos). A sala aceita até 90 jogadores no total, divididos igualmente entre os grupos. Não precisa criar time nenhum: cada jogador cai automaticamente no grupo com menos gente, mantendo tudo equilibrado.</p>
         </div>
       </div>
       <div id="teamList" style="margin-top:14px;"></div>
       <div class="row" style="margin-top:14px; align-items:flex-end;">
         <div style="max-width:160px;">
           <label for="numGruposInput">Quantos grupos</label>
-          <input id="numGruposInput" type="number" min="2" max="12" value="4">
+          <input id="numGruposInput" type="number" min="2" max="10" value="4">
         </div>
         <button class="btn btn-ghost" id="btnAtualizarGrupos" style="flex-shrink:0;">Atualizar grupos</button>
       </div>
       <p style="font-size:12px; margin-top:8px;">Mudar a quantidade reseta quem já entrou, só faça isso antes da galera começar a entrar, ou avise pra reentrarem.</p>
-      <div class="row" style="margin-top:14px; align-items:flex-end;">
-        <div style="max-width:160px;">
-          <label for="maxPorGrupoInput">Máx. por grupo</label>
-          <input id="maxPorGrupoInput" type="number" min="1" max="90" value="10">
-        </div>
-      </div>
-      <p style="font-size:12px; margin-top:8px;">Esse limite é aplicado na hora, sem tirar quem já entrou, só passa a valer pras próximas entradas.</p>
+      <p style="font-size:13px; margin-top:14px;">Máx. por grupo: <strong id="maxPorGrupoCalc">22</strong> jogadores (90 ÷ quantidade de grupos, arredondado pra baixo).</p>
     </div>
 
     <div id="painelIndividual" class="glass panel hidden">
