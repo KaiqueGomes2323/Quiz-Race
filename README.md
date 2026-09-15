@@ -89,6 +89,12 @@ const firebaseConfig = {
         "phaseEndsAt": {
           ".validate": "newData.isNumber()"
         },
+        "hostAtivo": {
+          ".validate": "newData.isBoolean()"
+        },
+        "hostSaiuEm": {
+          ".validate": "newData.isNumber()"
+        },
 
         "questionOrder": {
           "$idx": {

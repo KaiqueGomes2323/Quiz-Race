@@ -12,6 +12,8 @@ let currentRoom = null;
 let scheduledKey = null; 
 let phaseTimeout = null;
 let tickInterval = null;
+let presenceConnectedRef = null;
+let presenceHandler = null;
 
 const stepCreate = document.getElementById('stepCreate');
 const stepConfig = document.getElementById('stepConfig');
@@ -20,8 +22,27 @@ const stepFinish = document.getElementById('stepFinish');
 const roomCodeBox = document.getElementById('roomCodeBox');
 const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 
-document.getElementById('btnCriarSala').addEventListener('click', async () => {
-  const code = gerarCodigoSala();
+// Tenta criar uma sala com um código sorteado, sem sobrescrever uma sala já
+// existente. Usa transaction() em vez de set(): a escrita só é confirmada se
+// o nó ainda estiver vazio no exato momento em que chega ao servidor, então
+// duas pessoas criando salas ao mesmo tempo nunca colidem silenciosamente.
+// Com 30 caracteres possíveis em 5 posições (~24 milhões de combinações),
+// uma colisão é rara — por isso tenta de novo com outro código em vez de
+// travar o host na primeira tentativa.
+async function criarSalaComCodigoUnico(initialRoom, tentativas = 8){
+  for(let i = 0; i < tentativas; i++){
+    const code = gerarCodigoSala();
+    const resultado = await db.ref(`rooms/${code}`).transaction((atual) => {
+      if(atual !== null) return; // já existe uma sala nesse código: aborta, não sobrescreve
+      return initialRoom;
+    });
+    if(resultado.committed) return code;
+  }
+  throw new Error('Não foi possível gerar um código de sala livre. Tente novamente.');
+}
+
+document.getElementById('btnCriarSala').addEventListener('click', async (ev) => {
+  const btn = ev.currentTarget;
   const modo = document.querySelector('input[name="modoJogo"]:checked').value;
   const initialRoom = {
     status: 'lobby',
@@ -35,9 +56,21 @@ document.getElementById('btnCriarSala').addEventListener('click', async () => {
     players: {},
     questions: {}
   };
-  await db.ref(`rooms/${code}`).set(initialRoom);
-  localStorage.setItem('quizCorrida_hostRoom', code);
-  entrarComoHost(code);
+
+  btn.disabled = true;
+  const textoOriginal = btn.textContent;
+  btn.textContent = 'Criando sala...';
+
+  try{
+    const code = await criarSalaComCodigoUnico(initialRoom);
+    localStorage.setItem('quizCorrida_hostRoom', code);
+    entrarComoHost(code);
+  }catch(err){
+    console.error('Falha ao criar sala:', err);
+    alert('Não foi possível criar a sala agora. Confira sua conexão e tente de novo.');
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+  }
 });
 
 function entrarComoHost(code){
@@ -53,12 +86,54 @@ function entrarComoHost(code){
   document.getElementById('linkTelao').href = `display.html?room=${code}`;
   document.getElementById('linkTelao2').href = `display.html?room=${code}`;
 
+  configurarPresencaHost();
+
   roomRef.on('value', async snap => {
     currentRoom = snap.val();
     if(!currentRoom) return;
     await render();
     if(currentRoom.status === 'racing') agendarProximaTransicao();
   });
+}
+
+// Marca a sala como "com host conectado" enquanto essa aba estiver aberta,
+// e deixa agendado no servidor (via onDisconnect) que ela vira "sem host"
+// assim que a conexão cair — aba fechada, internet caindo, notebook
+// travando, o que for. Isso é o que permite limpar salas sem depender de
+// alguém clicar em "encerrar".
+//
+// Não apaga a sala na hora: um F5 do host também conta como um disconnect,
+// e apagar de cara destruiria a corrida em andamento por causa de um
+// simples reload. Em vez disso só grava um timestamp; a sala só é
+// considerada abandonada de verdade (e removida) depois de
+// SALA_INATIVA_TIMEOUT_MS sem o host voltar — ver salaEstaInativa() em
+// common.js, usado pelo join.js/player.js/display.js.
+function configurarPresencaHost(){
+  if(presenceConnectedRef) presenceConnectedRef.off('value', presenceHandler);
+
+  presenceConnectedRef = db.ref('.info/connected');
+  presenceHandler = (snap) => {
+    // .info/connected dispara de novo a cada reconexão, e os onDisconnect()
+    // registrados numa conexão anterior não sobrevivem a ela — por isso
+    // precisamos re-registrar toda vez que voltamos a ficar "true", não só
+    // na primeira vez.
+    if(!snap.val() || !roomRef) return;
+    roomRef.onDisconnect().update({
+      hostAtivo: false,
+      hostSaiuEm: firebase.database.ServerValue.TIMESTAMP
+    });
+    roomRef.update({ hostAtivo: true, hostSaiuEm: null });
+  };
+  presenceConnectedRef.on('value', presenceHandler);
+}
+
+function pararPresencaHost(){
+  if(presenceConnectedRef){
+    presenceConnectedRef.off('value', presenceHandler);
+    presenceConnectedRef = null;
+    presenceHandler = null;
+  }
+  if(roomRef) roomRef.onDisconnect().cancel();
 }
 
 (function tryReconnect(){
@@ -540,6 +615,7 @@ document.getElementById('btnJogarNovamente').addEventListener('click', async () 
 });
 
 async function sairDaSalaAtual(){
+  pararPresencaHost(); // cancela o onDisconnect antes de remover na mão, pra não sobrar escrita pendente numa sala que já vai sumir
   if(roomRef) roomRef.off();
   clearTimeout(phaseTimeout);
   clearInterval(tickInterval);

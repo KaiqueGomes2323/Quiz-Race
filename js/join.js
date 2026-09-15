@@ -41,6 +41,17 @@ btnEntrar.addEventListener('click', async () => {
 
     const room = snap.val();
 
+    // Sala com host desconectado há tempo demais: provavelmente foi
+    // abandonada (aba fechada sem clicar em "encerrar"). Aproveita essa
+    // visita pra limpar de vez e trata como se não existisse mais.
+    if(salaEstaInativa(room)){
+      limparSalaInativa(roomCode);
+      mostrarErro('Sala não encontrada. Confira o código com o host.');
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar na sala →';
+      return;
+    }
+
     if(room.status === 'finished'){
       mostrarErro('Essa corrida já acabou.');
       btnEntrar.disabled = false;

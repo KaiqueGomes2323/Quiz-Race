@@ -44,6 +44,14 @@ db.ref(`rooms/${roomCode}`).on('value', snap => {
     return;
   }
 
+  // Host sumiu (aba fechada, conexão caiu) e passou tempo suficiente pra
+  // não ser só um F5. Avisa o jogador e aproveita pra limpar a sala.
+  if(salaEstaInativa(room)){
+    limparSalaInativa(roomCode);
+    contentEl.innerHTML = '<div class="big">😕</div><p>O host saiu e a sala foi encerrada.</p>';
+    return;
+  }
+
   const team = room.teams && room.teams[teamId];
   if(!team){
     contentEl.innerHTML = '<div class="big">😕</div><p>Seu time foi removido da sala.</p>';

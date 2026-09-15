@@ -79,6 +79,15 @@ if(!roomCode){
       return;
     }
 
+    // Host sumiu (aba fechada, conexão caiu) e passou tempo suficiente pra
+    // não ser só um F5. Avisa quem está vendo o telão e limpa a sala.
+    if(salaEstaInativa(room)){
+      limparSalaInativa(roomCode);
+      resetRaceEls();
+      root.innerHTML = `<div class="glass waiting-box"><p>O host saiu e a sala foi encerrada.</p></div>`;
+      return;
+    }
+
     if(room.status === 'lobby'){
       resetRaceEls();
       renderLobby(room);

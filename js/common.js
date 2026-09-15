@@ -9,6 +9,34 @@ const MAX_JOGADORES_POR_GRUPO_LIMITE = 5000;
 const MAX_GRUPOS = 12;
 const MAX_JOGADORES_INDIVIDUAL = 40;
 
+// Quanto tempo esperar depois que o host cai (aba fechada, internet caiu,
+// notebook travou) antes de considerar a sala "abandonada" e limpável.
+// Precisa ser folgado o bastante pra sobreviver a um F5 normal do host
+// (que dispara um disconnect/reconnect rapidinho) sem apagar a sala à toa.
+const SALA_INATIVA_TIMEOUT_MS = 45 * 1000;
+
+// Não há Cloud Functions/cron nesse projeto (ficaria fora do plano Spark
+// gratuito do Firebase), então a limpeza é feita "na unha": o host marca
+// hostAtivo/hostSaiuEm via onDisconnect(), e qualquer cliente que topar
+// com uma sala parada por tempo demais (um jogador tentando entrar, o
+// telão, ou o próprio host) apaga ela. Uma sala só some de fato quando
+// alguém a visita de novo depois do timeout — não existe varredura em
+// segundo plano sem servidor.
+function salaEstaInativa(room){
+  if(!room) return false;
+  if(room.hostAtivo !== false) return false; // undefined = sala antiga/sem tracking, ainda não mexe
+  if(!room.hostSaiuEm) return false;
+  return (Date.now() - room.hostSaiuEm) > SALA_INATIVA_TIMEOUT_MS;
+}
+
+// Remove uma sala já confirmada como abandonada. Chamada "best effort":
+// se outro cliente já limpou ou o host voltou nesse meio-tempo, o pior
+// caso é uma escrita a mais (ou uma tentativa de remover algo que já
+// não existe), nunca um estado inconsistente.
+function limparSalaInativa(roomCode){
+  return db.ref(`rooms/${roomCode}`).remove().catch(() => {});
+}
+
 function gerarGrupos(quantidade){
   const teams = {};
   for(let i = 0; i < quantidade; i++){
