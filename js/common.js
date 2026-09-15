@@ -5,7 +5,11 @@ const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','�
 const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, null, null];
 
 const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
-const MAX_JOGADORES_POR_GRUPO_LIMITE = 5000;
+// Temporariamente limitado a 90 (era 5000): no plano Spark do Firebase o
+// Realtime Database tem um teto fixo de 100 conexões simultâneas, e host +
+// telão já ocupam 2 — 90 deixa uma margem de segurança confortável sem
+// depender de contar jogador por jogador.
+const MAX_JOGADORES_POR_GRUPO_LIMITE = 90;
 const MAX_GRUPOS = 12;
 const MAX_JOGADORES_INDIVIDUAL = 40;
 

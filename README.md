@@ -84,7 +84,7 @@ const firebaseConfig = {
           ".validate": "newData.isString() && (newData.val() == 'grupo' || newData.val() == 'individual' || newData.val() == 'dinamico')"
         },
         "maxPorGrupo": {
-          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5000"
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 90"
         },
         "phaseEndsAt": {
           ".validate": "newData.isNumber()"
