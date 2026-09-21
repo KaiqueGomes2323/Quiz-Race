@@ -1,3 +1,9 @@
+// Se o Firebase não carregou, o aviso já está na tela (js/firebase-guard.js).
+// Paramos aqui para não encher o console de ReferenceError em cascata.
+if(window.__firebaseOk === false){
+  throw new Error('Firebase não inicializado — veja o aviso na tela.');
+}
+
 const roomCode = getParam('room');
 const root = document.getElementById('root');
 let tickInterval = null;
@@ -70,6 +76,15 @@ if(!roomCode){
     if(!room){
       resetRaceEls();
       root.innerHTML = `<div class="glass waiting-box"><p>Sala não encontrada.</p></div>`;
+      return;
+    }
+
+    // Host sumiu (aba fechada, conexão caiu) e passou tempo suficiente pra
+    // não ser só um F5. Avisa quem está vendo o telão e limpa a sala.
+    if(salaEstaInativa(room)){
+      limparSalaInativa(roomCode);
+      resetRaceEls();
+      root.innerHTML = `<div class="glass waiting-box"><p>O host saiu e a sala foi encerrada.</p></div>`;
       return;
     }
 
@@ -165,9 +180,12 @@ async function renderRace(room){
     const color = TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length];
     const car = CAR_EMOJI[t.colorIndex % CAR_EMOJI.length];
     const animSrc = CAR_ANIMATIONS[t.colorIndex % CAR_ANIMATIONS.length];
-    const carHtml = animSrc
-      ? `<video class="car-video" src="${animSrc}" autoplay loop muted playsinline></video>`
-      : car;
+    const animIsVideo = animSrc && /\.(mp4|webm)$/i.test(animSrc);
+    const carHtml = !animSrc
+      ? car
+      : animIsVideo
+        ? `<video class="car-video" src="${animSrc}" autoplay loop muted playsinline></video>`
+        : `<img class="car-video" src="${animSrc}" alt="">`;
 
     let entry = raceEls.cars[tid];
     if(!entry){
