@@ -5,7 +5,10 @@ const TEAM_COLORS = ['var(--team-1)','var(--team-2)','var(--team-3)','var(--team
 const TEAM_COLORS_HEX = ['#ea3232','#ea7032','#e8a620','#eaea32','#adea32','#70ea32','#32ea32','#32ea70','#32eaad','#32eaea','#4eb8ed','#4e83ed','#4e4eed','#834eed','#ad32ea','#ea32ea','#ea32ad','#ea3270'];
 const TEAM_NAMES = ['Equipe Vermelha','Equipe Laranja','Equipe Dourada','Equipe Amarela','Equipe Lima','Equipe Verde','Equipe Esmeralda','Equipe Menta','Equipe Turquesa','Equipe Ciano','Equipe Azul','Equipe Anil','Equipe Índigo','Equipe Violeta','Equipe Roxa','Equipe Magenta','Equipe Rosa','Equipe Coral'];
 const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔','🏍️','🚛','🚚','🚜','🚲','🛵','🚂','🚁'];
-const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
+// Animações por equipe (mesmo índice de TEAM_NAMES/TEAM_COLORS). null = usa o emoji.
+// Índice 0 = Equipe Vermelha (mp4), índice 10 = Equipe Azul (gif).
+// Aceita .mp4/.webm (vídeo) ou .gif/.webp/.png (imagem).
+const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, 'Animacoes/Ambulancia.gif', null, null, null, null, null, null, null];
 
 const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
 // Temporariamente limitado a 90 (era 5000): no plano Spark do Firebase o

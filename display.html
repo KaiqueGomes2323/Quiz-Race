@@ -64,9 +64,9 @@
   }
   .car-video{
     display:block;
-    width:clamp(38px, 7.5vw, 58px);
+    width:64px; /* 2x do sprite 32x32: pixels inteiros, sem distorcer */
     height:auto;
-    border-radius:6px;
+    image-rendering:pixelated;
     transform:scaleX(-1);
   }
   .waiting-box, .finish-box{

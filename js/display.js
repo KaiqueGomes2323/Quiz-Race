@@ -180,9 +180,12 @@ async function renderRace(room){
     const color = TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length];
     const car = CAR_EMOJI[t.colorIndex % CAR_EMOJI.length];
     const animSrc = CAR_ANIMATIONS[t.colorIndex % CAR_ANIMATIONS.length];
-    const carHtml = animSrc
-      ? `<video class="car-video" src="${animSrc}" autoplay loop muted playsinline></video>`
-      : car;
+    const animIsVideo = animSrc && /\.(mp4|webm)$/i.test(animSrc);
+    const carHtml = !animSrc
+      ? car
+      : animIsVideo
+        ? `<video class="car-video" src="${animSrc}" autoplay loop muted playsinline></video>`
+        : `<img class="car-video" src="${animSrc}" alt="">`;
 
     let entry = raceEls.cars[tid];
     if(!entry){
