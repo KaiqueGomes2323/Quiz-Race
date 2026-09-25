@@ -6,9 +6,11 @@ const TEAM_COLORS_HEX = ['#ea3232','#ea7032','#e8a620','#eaea32','#adea32','#70e
 const TEAM_NAMES = ['Equipe Vermelha','Equipe Laranja','Equipe Dourada','Equipe Amarela','Equipe Lima','Equipe Verde','Equipe Esmeralda','Equipe Menta','Equipe Turquesa','Equipe Ciano','Equipe Azul','Equipe Anil','Equipe Índigo','Equipe Violeta','Equipe Roxa','Equipe Magenta','Equipe Rosa','Equipe Coral'];
 const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔','🏍️','🚛','🚚','🚜','🚲','🛵','🚂','🚁'];
 // Animações por equipe (mesmo índice de TEAM_NAMES/TEAM_COLORS). null = usa o emoji.
-// Índice 0 = Equipe Vermelha (mp4), índice 10 = Equipe Azul (gif).
+// Índice 0 = 1ª equipe (mp4), índice 1 = 2ª equipe (gif) — a ordem das
+// equipes na tela é a ordem de criação (t0, t1, t2...), que bate com esses
+// índices porque colorIndex = i % TEAM_COLORS_HEX.length em gerarGrupos.
 // Aceita .mp4/.webm (vídeo) ou .gif/.webp/.png (imagem).
-const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, 'Animacoes/TestAmbu.gif', null, null, null, null, null, null, null];
+const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', 'Animacoes/TestAmbu.gif', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
 
 const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
 // Temporariamente limitado a 90 (era 5000): no plano Spark do Firebase o

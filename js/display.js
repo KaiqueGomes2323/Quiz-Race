@@ -181,11 +181,14 @@ async function renderRace(room){
     const car = CAR_EMOJI[t.colorIndex % CAR_EMOJI.length];
     const animSrc = CAR_ANIMATIONS[t.colorIndex % CAR_ANIMATIONS.length];
     const animIsVideo = animSrc && /\.(mp4|webm)$/i.test(animSrc);
+    // onerror: se o arquivo não carregar (caminho errado, arquivo não
+    // commitado/deployado etc.), cai pro emoji em vez de "sumir" da tela
+    // sem deixar pista nenhuma de que algo quebrou.
     const carHtml = !animSrc
       ? car
       : animIsVideo
-        ? `<video class="car-video" src="${animSrc}" autoplay loop muted playsinline></video>`
-        : `<img class="car-video" src="${animSrc}" alt="">`;
+        ? `<video class="car-video" src="${animSrc}" autoplay loop muted playsinline onerror="this.replaceWith(document.createTextNode('${car}'))"></video>`
+        : `<img class="car-video" src="${animSrc}" alt="" onerror="this.replaceWith(document.createTextNode('${car}'))">`;
 
     let entry = raceEls.cars[tid];
     if(!entry){
