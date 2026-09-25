@@ -8,7 +8,7 @@ const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','�
 // Animações por equipe (mesmo índice de TEAM_NAMES/TEAM_COLORS). null = usa o emoji.
 // Índice 0 = Equipe Vermelha (mp4), índice 10 = Equipe Azul (gif).
 // Aceita .mp4/.webm (vídeo) ou .gif/.webp/.png (imagem).
-const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, 'Animacoes/Ambulancia.gif', null, null, null, null, null, null, null];
+const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', null, null, null, null, null, null, null, null, null, 'Animacoes/TestAmbu.gif', null, null, null, null, null, null, null];
 
 const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
 // Temporariamente limitado a 90 (era 5000): no plano Spark do Firebase o
