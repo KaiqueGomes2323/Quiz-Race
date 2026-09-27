@@ -1,30 +1,32 @@
-// 18 cores espaçadas uniformemente em matiz (passo de 20°) para ficarem
-// claramente diferentes entre si mesmo lado a lado — cobre exatamente o
-// MAX_GRUPOS (18), então nenhuma equipe deveria repetir cor/nome no uso normal.
-const TEAM_COLORS = ['var(--team-1)','var(--team-2)','var(--team-3)','var(--team-4)','var(--team-5)','var(--team-6)','var(--team-7)','var(--team-8)','var(--team-9)','var(--team-10)','var(--team-11)','var(--team-12)','var(--team-13)','var(--team-14)','var(--team-15)','var(--team-16)','var(--team-17)','var(--team-18)'];
-const TEAM_COLORS_HEX = ['#ea3232','#ea7032','#e8a620','#eaea32','#adea32','#70ea32','#32ea32','#32ea70','#32eaad','#32eaea','#4eb8ed','#4e83ed','#4e4eed','#834eed','#ad32ea','#ea32ea','#ea32ad','#ea3270'];
-const TEAM_NAMES = ['Equipe Vermelha','Equipe Laranja','Equipe Dourada','Equipe Amarela','Equipe Lima','Equipe Verde','Equipe Esmeralda','Equipe Menta','Equipe Turquesa','Equipe Ciano','Equipe Azul','Equipe Anil','Equipe Índigo','Equipe Violeta','Equipe Roxa','Equipe Magenta','Equipe Rosa','Equipe Coral'];
-const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔','🏍️','🚛','🚚','🚜','🚲','🛵','🚂','🚁'];
+// 10 cores espaçadas uniformemente em matiz para ficarem claramente
+// diferentes entre si mesmo lado a lado — cobre exatamente o MAX_GRUPOS (10),
+// então nenhuma equipe deveria repetir cor/nome no uso normal.
+const TEAM_COLORS = ['var(--team-1)','var(--team-2)','var(--team-3)','var(--team-4)','var(--team-5)','var(--team-6)','var(--team-7)','var(--team-8)','var(--team-9)','var(--team-10)'];
+const TEAM_COLORS_HEX = ['#ea3232','#ea7032','#e8a620','#eaea32','#adea32','#70ea32','#32ea32','#32ea70','#32eaad','#32eaea'];
+const TEAM_NAMES = ['Equipe Vermelha','Equipe Laranja','Equipe Dourada','Equipe Amarela','Equipe Lima','Equipe Verde','Equipe Esmeralda','Equipe Menta','Equipe Turquesa','Equipe Ciano'];
+const CAR_EMOJI = ['🏎️','🚗','🚙','🚓','🚐','🚕','🚘','🚖','🛻','🚔'];
 // Animações por equipe (mesmo índice de TEAM_NAMES/TEAM_COLORS). null = usa o emoji.
-// Índice 0 = 1ª equipe (mp4), índice 1 = 2ª equipe (gif) — a ordem das
-// equipes na tela é a ordem de criação (t0, t1, t2...), que bate com esses
-// índices porque colorIndex = i % TEAM_COLORS_HEX.length em gerarGrupos.
+// A ordem das equipes na tela é a ordem de criação (t0, t1, t2...), que bate
+// com esses índices porque colorIndex = i % TEAM_COLORS_HEX.length em gerarGrupos.
 // Aceita .mp4/.webm (vídeo) ou .gif/.webp/.png (imagem).
-const CAR_ANIMATIONS = ['Animacoes/Ambulancia.mp4', 'Animacoes/TestAmbu.gif', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
+// Há exatamente 10 arquivos na pasta Animacoes para os 10 times possíveis
+// (MAX_GRUPOS), então cada equipe tem uma animação única, sem repetição.
+const CAR_ANIMATIONS = ['Animacoes/f1.gif', 'Animacoes/TestAmbu.gif', 'Animacoes/Bici.gif', 'Animacoes/Camin.gif', 'Animacoes/caminhão de bombeiros.png', 'Animacoes/carro de passeio.png', 'Animacoes/moto.png', 'Animacoes/onibus.png', 'Animacoes/Po.gif', 'Animacoes/trem.png'];
 
-const MAX_JOGADORES_POR_GRUPO_PADRAO = 10;
-// Temporariamente limitado a 90 (era 5000): no plano Spark do Firebase o
+const MAX_JOGADORES_POR_GRUPO_PADRAO = 9;
+// Limitado a 90 (10 equipes x 9 jogadores): no plano Spark do Firebase o
 // Realtime Database tem um teto fixo de 100 conexões simultâneas, e host +
 // telão já ocupam 2 — 90 deixa uma margem de segurança confortável sem
 // depender de contar jogador por jogador.
 const MAX_JOGADORES_POR_GRUPO_LIMITE = 90;
-const MAX_GRUPOS = 18;
+const MAX_GRUPOS = 10;
 const MAX_JOGADORES_INDIVIDUAL = 40;
 
 // No modo "Em grupos (padrão)" o total de jogadores é fixo em
 // MAX_JOGADORES_POR_GRUPO_LIMITE (90), então o limite por grupo é sempre
-// recalculado a partir da quantidade de grupos: 18 grupos -> 5 por grupo,
-// 10 grupos -> 9 por grupo, 5 grupos -> 18 por grupo, e assim por diante.
+// recalculado a partir da quantidade de grupos: com o máximo de 10 grupos,
+// dá exatamente 9 por grupo; com menos grupos, o limite por grupo sobe
+// (ex.: 5 grupos -> 18 por grupo).
 function calcMaxPorGrupoPadrao(quantidadeGrupos){
   return Math.max(1, Math.floor(MAX_JOGADORES_POR_GRUPO_LIMITE / quantidadeGrupos));
 }
