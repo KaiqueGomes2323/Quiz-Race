@@ -185,3 +185,56 @@ function confirmModal(message, options = {}){
     });
   });
 }
+
+// Substitui o alert() nativo do navegador pelo mesmo visual do confirmModal
+// (mesmas classes .modal-overlay / .modal-card / .modal-actions), só que com
+// um único botão. Retorna uma Promise que resolve quando o modal é fechado.
+function alertModal(message, options = {}){
+  const {
+    title = 'Atenção',
+    okText = 'Entendi',
+    danger = false
+  } = options;
+
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal-card glass" role="alertdialog" aria-modal="true" aria-labelledby="modalAlertTitle" aria-describedby="modalAlertMsg">
+        <h3 id="modalAlertTitle">${escapeHtml(title)}</h3>
+        <p id="modalAlertMsg">${escapeHtml(message)}</p>
+        <div class="modal-actions">
+          <button type="button" class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-action="ok">${escapeHtml(okText)}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const okBtn = overlay.querySelector('[data-action="ok"]');
+
+    function close(){
+      overlay.classList.remove('is-open');
+      document.removeEventListener('keydown', onKeyDown);
+      setTimeout(() => overlay.remove(), 180);
+      resolve();
+    }
+
+    function onKeyDown(e){
+      if(e.key === 'Escape' || e.key === 'Enter'){
+        e.preventDefault();
+        close();
+      }
+    }
+
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) close();
+    });
+    okBtn.addEventListener('click', close);
+    document.addEventListener('keydown', onKeyDown);
+
+    requestAnimationFrame(() => {
+      overlay.classList.add('is-open');
+      okBtn.focus();
+    });
+  });
+}

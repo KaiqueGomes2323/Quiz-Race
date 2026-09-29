@@ -67,7 +67,7 @@ document.getElementById('btnCriarSala').addEventListener('click', async (ev) => 
     entrarComoHost(code);
   }catch(err){
     console.error('Falha ao criar sala:', err);
-    alert('Não foi possível criar a sala agora. Confira sua conexão e tente de novo.');
+    alertModal('Confira sua conexão e tente de novo.', { title:'Não foi possível criar a sala', danger:true });
     btn.disabled = false;
     btn.textContent = textoOriginal;
   }
@@ -378,7 +378,7 @@ document.getElementById('btnAddQuestion').addEventListener('click', async () => 
   const correctChecked = optionsContainer.querySelector('input[name="qCorrect"]:checked');
   const correct = correctChecked ? parseInt(correctChecked.value, 10) : 0;
 
-  if(!text || opts.length < MIN_ALTERNATIVAS || opts.some(o => !o)){ alert(`Preencha a pergunta e as ${opts.length} alternativas.`); return; }
+  if(!text || opts.length < MIN_ALTERNATIVAS || opts.some(o => !o)){ alertModal(`Preencha a pergunta e as ${opts.length} alternativas.`, { title:'Pergunta incompleta' }); return; }
 
   const correctEnc = await aesEncrypt(correct);
 
@@ -387,7 +387,7 @@ document.getElementById('btnAddQuestion').addEventListener('click', async () => 
     await db.ref(`rooms/${roomCode}/questions/${qid}`).set({ text, options: opts, correctEnc });
   }catch(err){
     console.error(err);
-    alert('Não foi possível salvar a pergunta. Confira o tamanho do texto (máx. 300) e das alternativas (máx. 120 cada).');
+    alertModal('Confira o tamanho do texto (máx. 300) e das alternativas (máx. 120 cada).', { title:'Não foi possível salvar a pergunta', danger:true });
     return;
   }
 
@@ -404,7 +404,7 @@ inputSegundos.addEventListener('input', () => {
 
 document.getElementById('btnIniciar').addEventListener('click', async () => {
   const questions = currentRoom.questions || {};
-  if(Object.keys(questions).length < 1){ alert('Adicione pelo menos 1 pergunta.'); return; }
+  if(Object.keys(questions).length < 1){ alertModal('Adicione pelo menos 1 pergunta antes de iniciar a corrida.', { title:'Sem perguntas' }); return; }
 
   const segundos = Math.min(60, Math.max(5, parseInt(inputSegundos.value, 10) || 20));
   const orderedIds = Object.keys(questions);
