@@ -144,17 +144,27 @@ function renderRacing(room, team){
 }
 
 function renderFinished(room, team){
-  const teams = room.teams || {};
-  const ranked = Object.values(teams).sort((a,b) => b.position - a.position);
-  const winner = ranked[0];
-  const souVencedor = winner.name === team.name && winner.position === team.position;
+  const { topScore, leaders, empate } = resultadoFinal(room.teams);
+  const winner = leaders[0];
+  const souLider = leaders.some(t => t.name === team.name && (t.position || 0) === (team.position || 0));
+
+  let emoji, titulo;
+  if(empate){
+    emoji = souLider ? '🤝' : '🏁';
+    titulo = souLider
+      ? `Seu time empatou na frente com ${escapeHtml(nomesDoEmpate(leaders.filter(t => !(t.name === team.name))) || 'outros times')}!`
+      : `Empate na frente: ${escapeHtml(nomesDoEmpate(leaders))} com ${textoPontos(topScore)}.`;
+  } else {
+    emoji = souLider ? '🏆' : '🏁';
+    titulo = souLider ? 'Seu time venceu a corrida!' : `${escapeHtml(winner.name)} venceu a corrida.`;
+  }
 
   contentEl.innerHTML = `
-    <div class="big">${souVencedor ? '🏆' : '🏁'}</div>
+    <div class="big">${emoji}</div>
     <p style="font-size:18px; font-weight:700; color:var(--text-hi);">
-      ${souVencedor ? 'Seu time venceu a corrida!' : `${escapeHtml(winner.name)} venceu a corrida.`}
+      ${titulo}
     </p>
-    <p>Seu time terminou com ${team.position} pontos.</p>
+    <p>Seu time terminou com ${textoPontos(team.position || 0)}.</p>
   `;
 }
 

@@ -582,12 +582,14 @@ function renderProgress(){
 }
 
 function renderFinish(){
-  const teams = currentRoom.teams || {};
-  const ranked = Object.values(teams).sort((a,b) => b.position - a.position);
-  const winner = ranked[0];
-  const rest = ranked.slice(1).map(t => `${escapeHtml(t.name)} (${t.position})`).join(' · ');
+  const { ranked, topScore, leaders, others, empate } = resultadoFinal(currentRoom.teams);
+  const winner = leaders[0];
+  const rest = (empate ? ranked : others).map(t => `${escapeHtml(t.name)} (${t.position || 0})`).join(' · ');
+  const destaque = empate
+    ? `<strong style="color:var(--flag-yellow); font-size:18px;">Empate!</strong> ${escapeHtml(nomesDoEmpate(leaders))} terminaram na frente com ${textoPontos(topScore)}.`
+    : `<strong style="color:var(--flag-yellow); font-size:18px;">${escapeHtml(winner.name)}</strong> venceu a corrida!`;
   document.getElementById('finishText').innerHTML = `
-    <strong style="color:var(--flag-yellow); font-size:18px;">${escapeHtml(winner.name)}</strong> venceu a corrida!
+    ${destaque}
     ${rest ? '<br><span style="font-size:13px;">' + rest + '</span>' : ''}
   `;
 }

@@ -238,3 +238,28 @@ function alertModal(message, options = {}){
     });
   });
 }
+
+// Calcula o resultado final da corrida tratando empate: todo time com a
+// pontuação máxima é "líder". Se houver mais de um, é empate (não existe
+// vencedor único). Usado pelo telão, pelo host e pela tela do jogador para
+// os três mostrarem sempre o mesmo resultado.
+function resultadoFinal(teams){
+  const ranked = Object.values(teams || {}).sort((a,b) => (b.position||0) - (a.position||0));
+  const topScore = ranked.length ? (ranked[0].position || 0) : 0;
+  const leaders = ranked.filter(t => (t.position || 0) === topScore);
+  const others = ranked.filter(t => (t.position || 0) !== topScore);
+  return { ranked, topScore, leaders, others, empate: leaders.length > 1 };
+}
+
+function textoPontos(n){
+  return `${n} ponto${n === 1 ? '' : 's'}`;
+}
+
+// "A e B", "A, B e C" — acima de 3 vira só a contagem, pra não estourar a tela.
+function nomesDoEmpate(times){
+  const nomes = times.map(t => t.name);
+  if(nomes.length <= 3){
+    return nomes.length <= 1 ? (nomes[0] || '') : nomes.slice(0, -1).join(', ') + ' e ' + nomes[nomes.length - 1];
+  }
+  return `${nomes.length} times`;
+}

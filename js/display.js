@@ -236,22 +236,28 @@ async function renderRace(room){
 }
 
 function renderFinished(room){
-  const teams = room.teams || {};
-  const ranked = Object.values(teams).sort((a,b) => (b.position||0) - (a.position||0));
-  const winner = ranked[0];
-  const color = TEAM_COLORS_HEX[winner.colorIndex % TEAM_COLORS_HEX.length];
+  const { ranked, topScore, leaders, others, empate } = resultadoFinal(room.teams);
+  const winner = leaders[0];
+  const color = empate ? 'var(--flag-yellow)' : TEAM_COLORS_HEX[winner.colorIndex % TEAM_COLORS_HEX.length];
+  const titulo = empate ? 'Empate!' : winner.name;
+  const subtitulo = empate
+    ? `${nomesDoEmpate(leaders)} empataram na frente com ${textoPontos(topScore)}!`
+    : `venceu a corrida com ${textoPontos(topScore)}!`;
+  // Em caso de empate, todos os times aparecem nos chips (os empatados primeiro);
+  // sem empate, só os demais colocados, como antes.
+  const chips = empate ? ranked : others;
 
   root.innerHTML = `
     <div class="glass finish-box">
-      <div class="big">🏆</div>
+      <div class="big">${empate ? '🤝' : '🏆'}</div>
       <div style="font-family:var(--font-display); font-size:clamp(24px,6vw,38px); font-weight:800; color:${color}; overflow-wrap:anywhere;">
-        ${escapeHtml(winner.name)}
+        ${escapeHtml(titulo)}
       </div>
-      <p style="margin-top:8px;">venceu a corrida com ${winner.position} pontos!</p>
+      <p style="margin-top:8px;">${escapeHtml(subtitulo)}</p>
       <div class="reveal-strip">
-        ${ranked.slice(1).map(t => {
+        ${chips.map(t => {
           const c = TEAM_COLORS_HEX[t.colorIndex % TEAM_COLORS_HEX.length];
-          return `<span class="reveal-chip" style="border-color:${c};">${escapeHtml(t.name)} — ${t.position}</span>`;
+          return `<span class="reveal-chip" style="border-color:${c};">${escapeHtml(t.name)} — ${t.position || 0}</span>`;
         }).join('')}
       </div>
     </div>
