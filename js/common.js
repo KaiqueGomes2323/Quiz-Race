@@ -20,7 +20,7 @@ const MAX_JOGADORES_POR_GRUPO_PADRAO = 9;
 // depender de contar jogador por jogador.
 const MAX_JOGADORES_POR_GRUPO_LIMITE = 90;
 const MAX_GRUPOS = 10;
-const MAX_JOGADORES_INDIVIDUAL = 40;
+const MAX_JOGADORES_INDIVIDUAL = 60;
 
 // No modo "Em grupos (padrão)" o total de jogadores é fixo em
 // MAX_JOGADORES_POR_GRUPO_LIMITE (90), então o limite por grupo é sempre
